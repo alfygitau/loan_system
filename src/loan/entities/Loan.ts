@@ -1,4 +1,5 @@
 import { LoanApplication } from 'src/loan-application/entities/LoanApplication';
+import { columnNumericTransformer } from 'src/loan-application/transformers/decimal.transformer';
 import { LoanRepaymentSchedule } from 'src/loan-repayment/entities/LoanRepayment';
 import {
   Column,
@@ -16,13 +17,13 @@ export class Loan {
   @Column()
   loanCode: string;
 
-  @Column({ type: 'decimal' })
+  @Column({ type: 'decimal', transformer: columnNumericTransformer })
   disbursedAmount: number;
 
-  @Column({ type: 'decimal' })
+  @Column({ type: 'decimal', transformer: columnNumericTransformer })
   repaymentAmount: number;
 
-  @Column({ type: 'decimal' })
+  @Column({ type: 'decimal', transformer: columnNumericTransformer })
   outstandingBalance: number;
 
   @Column({ nullable: true })

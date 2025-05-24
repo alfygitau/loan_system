@@ -1,6 +1,7 @@
 // src/loan-types/loan-type.entity.ts
 
 import { LoanApplication } from 'src/loan-application/entities/LoanApplication';
+import { columnNumericTransformer } from 'src/loan-application/transformers/decimal.transformer';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -32,16 +33,31 @@ export class LoanProduct {
   @Column({ type: 'text', nullable: true })
   description: string;
 
-  @Column({ type: 'decimal', precision: 5, scale: 2 })
+  @Column({
+    type: 'decimal',
+    precision: 5,
+    scale: 2,
+    transformer: columnNumericTransformer,
+  })
   interestRate: number;
 
   @Column({ type: 'enum', enum: ['flat', 'reducing_balance'] })
   interestType: InterestType;
 
-  @Column({ type: 'decimal', precision: 12, scale: 2 })
+  @Column({
+    type: 'decimal',
+    precision: 12,
+    scale: 2,
+    transformer: columnNumericTransformer,
+  })
   minimumAmount: number;
 
-  @Column({ type: 'decimal', precision: 12, scale: 2 })
+  @Column({
+    type: 'decimal',
+    precision: 12,
+    scale: 2,
+    transformer: columnNumericTransformer,
+  })
   maximumAmount: number;
 
   @Column({ type: 'int' }) // in months
@@ -59,7 +75,13 @@ export class LoanProduct {
   @Column({ type: 'int', default: 0 }) // in days
   gracePeriod: number;
 
-  @Column({ type: 'decimal', precision: 5, scale: 2, default: 0.0 }) // penalty rate %
+  @Column({
+    type: 'decimal',
+    precision: 5,
+    scale: 2,
+    default: 0.0,
+    transformer: columnNumericTransformer,
+  }) // penalty rate %
   penaltyRate: number;
 
   @Column({ type: 'int', default: 18 }) // min age for borrower
@@ -68,13 +90,31 @@ export class LoanProduct {
   @Column({ default: false })
   collateralRequired: boolean;
 
-  @Column({ type: 'decimal', precision: 12, scale: 2, default: 0.0 })
+  @Column({
+    type: 'decimal',
+    precision: 12,
+    scale: 2,
+    default: 0.0,
+    transformer: columnNumericTransformer,
+  })
   processingFee: number;
 
-  @Column({ type: 'decimal', precision: 12, scale: 2, default: 0.0 })
+  @Column({
+    type: 'decimal',
+    precision: 12,
+    scale: 2,
+    default: 0.0,
+    transformer: columnNumericTransformer,
+  })
   insuranceFee: number;
 
-  @Column({ type: 'decimal', precision: 12, scale: 2, default: 0.0 })
+  @Column({
+    type: 'decimal',
+    precision: 12,
+    scale: 2,
+    default: 0.0,
+    transformer: columnNumericTransformer,
+  })
   otherCharges: number;
 
   @Column({ type: 'text', nullable: true })

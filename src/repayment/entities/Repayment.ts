@@ -1,3 +1,4 @@
+import { columnNumericTransformer } from 'src/loan-application/transformers/decimal.transformer';
 import { Loan } from 'src/loan/entities/Loan';
 import {
   Column,
@@ -16,7 +17,11 @@ export class LoanRepayment {
   @ManyToOne(() => Loan, { onDelete: 'CASCADE' })
   loan: Loan;
 
-  @Column('decimal', { precision: 15, scale: 2 })
+  @Column('decimal', {
+    precision: 15,
+    scale: 2,
+    transformer: columnNumericTransformer,
+  })
   amount: number;
 
   @Column()
@@ -35,7 +40,11 @@ export class LoanRepayment {
   })
   status: 'success' | 'failed' | 'pending';
 
-  @Column('decimal', { precision: 15, scale: 2 })
+  @Column('decimal', {
+    precision: 15,
+    scale: 2,
+    transformer: columnNumericTransformer,
+  })
   balanceAfterPayment: number;
 
   @CreateDateColumn()

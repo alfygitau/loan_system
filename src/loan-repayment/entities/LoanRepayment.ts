@@ -1,3 +1,4 @@
+import { columnNumericTransformer } from 'src/loan-application/transformers/decimal.transformer';
 import { Loan } from 'src/loan/entities/Loan';
 import {
   Entity,
@@ -21,13 +22,26 @@ export class LoanRepaymentSchedule {
   @Column()
   dueDate: Date;
 
-  @Column('decimal', { precision: 15, scale: 2 })
+  @Column('decimal', {
+    precision: 15,
+    scale: 2,
+    transformer: columnNumericTransformer,
+  })
   installmentAmount: number;
 
-  @Column('decimal', { precision: 15, scale: 2, default: 0 })
+  @Column('decimal', {
+    precision: 15,
+    scale: 2,
+    default: 0,
+    transformer: columnNumericTransformer,
+  })
   amountPaid: number;
 
-  @Column('decimal', { precision: 15, scale: 2 })
+  @Column('decimal', {
+    precision: 15,
+    scale: 2,
+    transformer: columnNumericTransformer,
+  })
   balance: number;
 
   @Column({ nullable: true })

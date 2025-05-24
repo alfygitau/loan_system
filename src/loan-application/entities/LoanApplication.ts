@@ -6,11 +6,11 @@ import {
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToMany,
 } from 'typeorm';
 import { User } from 'src/users/entities/User';
 import { Borrower } from 'src/borrower/entities/Borrower';
 import { LoanProduct } from 'src/loan-products/entities/LoanProduct';
+import { columnNumericTransformer } from '../transformers/decimal.transformer';
 
 export type LoanStatus =
   | 'pending'
@@ -40,7 +40,11 @@ export class LoanApplication {
   @JoinColumn({ name: 'loanOfficerId' })
   loanOfficer: User;
 
-  @Column('decimal', { precision: 15, scale: 2 })
+  @Column('decimal', {
+    precision: 15,
+    scale: 2,
+    transformer: columnNumericTransformer,
+  })
   amount: number;
 
   @Column('int')
@@ -56,7 +60,11 @@ export class LoanApplication {
   @Column()
   purpose: string;
 
-  @Column('decimal', { precision: 15, scale: 2 })
+  @Column('decimal', {
+    precision: 15,
+    scale: 2,
+    transformer: columnNumericTransformer,
+  })
   repaymentAmount: number;
 
   @CreateDateColumn()
