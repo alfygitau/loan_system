@@ -6,7 +6,7 @@ import { Loan } from './entities/Loan';
 import { CreateLoanDto } from './dtos/CreateLoan.dto';
 import { UpdateLoanDto } from './dtos/UpdateLoan.dto';
 import { addMonths } from 'date-fns';
-import { LoanRepaymentSchedule } from 'src/loan-repayment/entities/LoanRepayment';
+import { LoanRepaymentSchedule } from 'src/loan-repayment-schedule/entities/LoanRepayment';
 
 @Injectable()
 export class LoanService {

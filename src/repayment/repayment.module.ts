@@ -5,7 +5,7 @@ import { Loan } from 'src/loan/entities/Loan';
 import { LoanRepayment } from './entities/Repayment';
 import { RepaymentService } from './repayment.service';
 import { RepaymentController } from './repayment.controller';
-import { LoanRepaymentSchedule } from 'src/loan-repayment/entities/LoanRepayment';
+import { LoanRepaymentSchedule } from 'src/loan-repayment-schedule/entities/LoanRepayment';
 
 @Module({
   imports: [

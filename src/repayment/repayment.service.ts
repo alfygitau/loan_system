@@ -10,7 +10,7 @@ import { CreateLoanRepaymentDto } from './dtos/CreateLoanRepayment.dto';
 import { UpdateLoanRepaymentDto } from './dtos/UpdateLoanRepayment.dto';
 import { Loan } from 'src/loan/entities/Loan';
 import { LoanRepayment } from './entities/Repayment';
-import { LoanRepaymentSchedule } from 'src/loan-repayment/entities/LoanRepayment';
+import { LoanRepaymentSchedule } from 'src/loan-repayment-schedule/entities/LoanRepayment';
 
 @Injectable()
 export class RepaymentService {

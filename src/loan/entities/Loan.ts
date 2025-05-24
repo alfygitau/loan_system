@@ -1,6 +1,6 @@
 import { LoanApplication } from 'src/loan-application/entities/LoanApplication';
 import { columnNumericTransformer } from 'src/loan-application/transformers/decimal.transformer';
-import { LoanRepaymentSchedule } from 'src/loan-repayment/entities/LoanRepayment';
+import { LoanRepaymentSchedule } from 'src/loan-repayment-schedule/entities/LoanRepayment';
 import {
   Column,
   Entity,

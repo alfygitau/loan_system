@@ -11,7 +11,7 @@ import { IncomeModule } from './income/income.module';
 import { ContactModule } from './contact/contact.module';
 import { LoanApplicationModule } from './loan-application/loan-application.module';
 import { LoanModule } from './loan/loan.module';
-import { LoanRepaymentModule } from './loan-repayment/loan-repayment.module';
+import { LoanRepaymentModule } from './loan-repayment-schedule/loan-repayment.module';
 import { RepaymentModule } from './repayment/repayment.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
