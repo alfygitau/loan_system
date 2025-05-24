@@ -7,6 +7,7 @@ import {
   Patch,
   Delete,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 
 import { LoanApplicationService } from './loan-application.service';
@@ -24,8 +25,24 @@ export class LoanApplicationController {
   }
 
   @Get()
-  findAll() {
-    return this.loanAppService.findAll();
+  findAll(
+    @Query('page') page: string = '1',
+    @Query('limit') limit: string = '10',
+    @Query('search') search?: string,
+    @Query('status') status?: string,
+    @Query('loanType') loanType?: string,
+    @Query('minRepayment') minRepayment?: string,
+    @Query('maxRepayment') maxRepayment?: string,
+  ) {
+    return this.loanAppService.findAll({
+      page: Number(page) || 1,
+      limit: Number(limit) || 10,
+      search,
+      status,
+      loanType,
+      minRepayment: minRepayment ? Number(minRepayment) : undefined,
+      maxRepayment: maxRepayment ? Number(maxRepayment) : undefined,
+    });
   }
 
   @Patch(':id/approve')

@@ -146,8 +146,74 @@ export class LoanApplicationService {
     return savedLoan;
   }
 
-  async findAll(): Promise<LoanApplication[]> {
-    return this.loanAppRepo.find({ relations: ['borrower'] });
+  async findAll(filters: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    status?: string;
+    loanType?: string;
+    minRepayment?: number;
+    maxRepayment?: number;
+  }): Promise<{
+    data: LoanApplication[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
+    const query = this.loanAppRepo
+      .createQueryBuilder('loan')
+      .leftJoinAndSelect('loan.borrower', 'borrower')
+      .leftJoinAndSelect('loan.loanType', 'loanType');
+
+    // Search by borrower's full name
+    if (filters.search) {
+      query.andWhere(
+        `LOWER(CONCAT(borrower.firstName, ' ', borrower.middleName, ' ', borrower.lastName)) LIKE LOWER(:search)`,
+        { search: `%${filters.search.trim()}%` },
+      );
+    }
+
+    // Filter by loan status
+    if (filters.status) {
+      query.andWhere('loan.status = :status', { status: filters.status });
+    }
+
+    // Filter by loan type
+    if (filters.loanType) {
+      query.andWhere('loanType.loanName ILIKE :loanType', {
+        loanType: `%${filters.loanType.trim()}%`,
+      });
+    }
+
+    // Filter by repayment amount
+    if (!isNaN(filters.minRepayment)) {
+      query.andWhere('loan.repaymentAmount >= :minRepayment', {
+        minRepayment: filters.minRepayment,
+      });
+    }
+
+    if (!isNaN(filters.maxRepayment)) {
+      query.andWhere('loan.repaymentAmount <= :maxRepayment', {
+        maxRepayment: filters.maxRepayment,
+      });
+    }
+
+    // Pagination defaults
+    const page = filters.page ?? 1;
+    const limit = filters.limit ?? 10;
+
+    query.skip((page - 1) * limit).take(limit);
+
+    const [data, total] = await query.getManyAndCount();
+
+    return {
+      data,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   async findOne(id: number): Promise<LoanApplication> {
