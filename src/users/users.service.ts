@@ -24,8 +24,27 @@ export class UsersService {
     return this.userRepository.save(user);
   }
 
-  async findAll(): Promise<User[]> {
-    return this.userRepository.find();
+  async findAll(
+    page = 1,
+    limit = 10,
+    search = '',
+  ): Promise<{ data: User[]; total: number; page: number; limit: number }> {
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await this.userRepository
+      .createQueryBuilder('user')
+      .where('user.name ILIKE :search OR user.email ILIKE :search', {
+        search: `%${search}%`,
+      })
+      .skip(skip)
+      .take(limit)
+      .getManyAndCount();
+    return {
+      data,
+      total,
+      page,
+      limit,
+    };
   }
 
   async findByEmail(email: string): Promise<User | undefined> {

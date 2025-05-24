@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   ParseUUIDPipe,
+  Query,
 } from '@nestjs/common';
 import { LoanService } from './loan.service';
 import { CreateLoanDto } from './dtos/CreateLoan.dto';
@@ -23,8 +24,30 @@ export class LoanController {
   }
 
   @Get()
-  findAll() {
-    return this.loanService.findAll();
+  findAll(
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+    @Query('search') search?: string,
+    @Query('loanOfficer') loanOfficer?: string,
+    @Query('status') status?: string,
+    @Query('minRepayment') minRepayment?: number,
+    @Query('maxRepayment') maxRepayment?: number,
+    @Query('loanType') loanType?: string,
+    @Query('minBalance') minBalance?: number,
+    @Query('maxBalance') maxBalance?: number,
+  ) {
+    return this.loanService.findAll({
+      page: Number(page),
+      limit: Number(limit),
+      search,
+      loanOfficer,
+      status,
+      minRepayment: Number(minRepayment),
+      maxRepayment: Number(maxRepayment),
+      loanType,
+      minBalance: Number(minBalance),
+      maxBalance: Number(maxBalance),
+    });
   }
 
   @Get(':id')

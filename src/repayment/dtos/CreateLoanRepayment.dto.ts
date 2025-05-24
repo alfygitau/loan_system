@@ -1,4 +1,3 @@
-// src/loan-repayment/dtos/CreateLoanRepayment.dto.ts
 import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class CreateLoanRepaymentDto {

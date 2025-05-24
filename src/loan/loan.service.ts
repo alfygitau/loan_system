@@ -39,8 +39,100 @@ export class LoanService {
     return this.loanRepo.save(loan);
   }
 
-  findAll(): Promise<Loan[]> {
-    return this.loanRepo.find({ relations: ['schedule'] });
+  async findAll(filters: {
+    page: number;
+    limit: number;
+    search?: string;
+    loanOfficer?: string;
+    status?: string;
+    minRepayment?: number;
+    maxRepayment?: number;
+    loanType?: string;
+    minBalance?: number;
+    maxBalance?: number;
+  }) {
+    // Convert numeric filters from strings to numbers if needed
+    const minRepayment =
+      filters.minRepayment !== undefined
+        ? Number(filters.minRepayment)
+        : undefined;
+    const maxRepayment =
+      filters.maxRepayment !== undefined
+        ? Number(filters.maxRepayment)
+        : undefined;
+    const minBalance =
+      filters.minBalance !== undefined ? Number(filters.minBalance) : undefined;
+    const maxBalance =
+      filters.maxBalance !== undefined ? Number(filters.maxBalance) : undefined;
+
+    const query = this.loanRepo
+      .createQueryBuilder('loan')
+      .leftJoinAndSelect('loan.application', 'application')
+      .leftJoinAndSelect('application.borrower', 'borrower')
+      .leftJoinAndSelect('application.loanType', 'loanType')
+      .leftJoinAndSelect('application.loanOfficer', 'loanOfficer');
+
+    // Search by borrower full name
+    if (filters.search) {
+      query.andWhere(
+        `LOWER(CONCAT(borrower.firstName, ' ', borrower.lastName)) LIKE LOWER(:search)`,
+        { search: `%${filters.search}%` },
+      );
+    }
+
+    if (filters.loanOfficer) {
+      query.andWhere('loanOfficer.name ILIKE :loanOfficer', {
+        loanOfficer: `%${filters.loanOfficer}%`,
+      });
+    }
+
+    // Filter by loan status
+    if (filters.status) {
+      query.andWhere('loan.status = :status', { status: filters.status });
+    }
+
+    // Filter by loan type name (partial match)
+    if (filters.loanType) {
+      query.andWhere('loanType.loanName ILIKE :loanType', {
+        loanType: `%${filters.loanType}%`,
+      });
+    }
+
+    // Filter by repayment amount range
+    if (!isNaN(minRepayment)) {
+      query.andWhere('loan.repaymentAmount >= :minRepayment', {
+        minRepayment,
+      });
+    }
+    if (!isNaN(maxRepayment)) {
+      query.andWhere('loan.repaymentAmount <= :maxRepayment', {
+        maxRepayment,
+      });
+    }
+
+    // Filter by outstanding balance range
+    if (!isNaN(minBalance)) {
+      query.andWhere('loan.outstandingBalance >= :minBalance', {
+        minBalance,
+      });
+    }
+    if (!isNaN(maxBalance)) {
+      query.andWhere('loan.outstandingBalance <= :maxBalance', {
+        maxBalance,
+      });
+    }
+
+    // Pagination
+    query.skip((filters.page - 1) * filters.limit).take(filters.limit);
+    const [data, total] = await query.getManyAndCount();
+
+    return {
+      data,
+      total,
+      page: filters.page,
+      limit: filters.limit,
+      totalPages: Math.ceil(total / filters.limit),
+    };
   }
 
   async findOne(id: string): Promise<Loan> {
