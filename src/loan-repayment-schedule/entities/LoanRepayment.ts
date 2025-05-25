@@ -54,6 +54,17 @@ export class LoanRepaymentSchedule {
   })
   status: 'unpaid' | 'paid' | 'partial' | 'late';
 
+  @Column('decimal', {
+    precision: 15,
+    scale: 2,
+    default: 0,
+    transformer: columnNumericTransformer,
+  })
+  fineAmount: number;
+
+  @Column({ default: false })
+  isLate: boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 

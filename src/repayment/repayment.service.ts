@@ -5,7 +5,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { LessThan, Repository } from 'typeorm';
 import { CreateLoanRepaymentDto } from './dtos/CreateLoanRepayment.dto';
 import { UpdateLoanRepaymentDto } from './dtos/UpdateLoanRepayment.dto';
 import { Loan } from 'src/loan/entities/Loan';
@@ -121,5 +121,52 @@ export class RepaymentService {
   async remove(id: number): Promise<void> {
     const repayment = await this.findOne(id);
     await this.repaymentRepo.remove(repayment);
+  }
+
+  async applyLateFines() {
+    const today = new Date();
+    const overdueSchedules = await this.scheduleRepo.find({
+      where: {
+        status: 'unpaid',
+        dueDate: LessThan(today),
+      },
+      relations: ['loan', 'loan.application', 'loan.application.loanType'],
+    });
+
+    for (const schedule of overdueSchedules) {
+      const loan = schedule.loan;
+      const loanProduct = loan.application.loanType;
+
+      const gracePeriod = loanProduct.gracePeriod || 0;
+      const penaltyRate = loanProduct.penaltyRate;
+
+      const dueDateWithGrace = new Date(schedule.dueDate);
+      dueDateWithGrace.setDate(dueDateWithGrace.getDate() + gracePeriod);
+
+      const isLate = today > dueDateWithGrace;
+
+      if (isLate && !schedule.isLate) {
+        const daysLate = Math.floor(
+          (today.getTime() - dueDateWithGrace.getTime()) /
+            (1000 * 60 * 60 * 24),
+        );
+
+        const fine = schedule.installmentAmount * penaltyRate * daysLate;
+
+        // Update schedule
+        schedule.fineAmount = fine;
+        schedule.isLate = true;
+        schedule.installmentAmount += fine;
+        schedule.balance += fine;
+        schedule.status = 'late';
+
+        // Update loan repaymentAmount
+        loan.repaymentAmount += fine;
+
+        // Persist both
+        await this.scheduleRepo.save(schedule);
+        await this.loanRepo.save(loan);
+      }
+    }
   }
 }

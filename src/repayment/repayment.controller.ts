@@ -11,10 +11,16 @@ import {
 import { CreateLoanRepaymentDto } from './dtos/CreateLoanRepayment.dto';
 import { UpdateLoanRepaymentDto } from './dtos/UpdateLoanRepayment.dto';
 import { RepaymentService } from './repayment.service';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Controller('loan-repayments')
 export class RepaymentController {
   constructor(private readonly repaymentService: RepaymentService) {}
+
+  @Cron(CronExpression.EVERY_10_SECONDS)
+  handleLateFineCheck() {
+    this.repaymentService.applyLateFines();
+  }
 
   @Post()
   repayLoan(@Body() dto: CreateLoanRepaymentDto) {

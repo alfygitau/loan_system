@@ -15,6 +15,7 @@ import { LoanRepaymentModule } from './loan-repayment-schedule/loan-repayment.mo
 import { RepaymentModule } from './repayment/repayment.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { ConfigModule } from '@nestjs/config';
     ConfigModule.forRoot({
       isGlobal: true, // makes ConfigService available everywhere without importing module again
     }),
+    ScheduleModule.forRoot(),
     UsersModule,
     LoanProductsModule,
     BorrowerModule,
