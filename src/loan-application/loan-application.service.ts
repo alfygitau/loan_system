@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { LoanApplication } from './entities/LoanApplication';
@@ -144,6 +148,46 @@ export class LoanApplicationService {
     await this.loanAppRepo.save(loanApp);
 
     return savedLoan;
+  }
+
+  async rejectApplication(
+    applicationId: number,
+    reason?: string,
+  ): Promise<Loan> {
+    const loanApp = await this.loanAppRepo.findOne({
+      where: { id: applicationId },
+      relations: ['borrower', 'loanType', 'loanOfficer'],
+    });
+
+    if (!loanApp) {
+      throw new NotFoundException('Loan application not found');
+    }
+
+    if (loanApp.status === 'approved') {
+      throw new BadRequestException('Cannot reject an approved application');
+    }
+
+    if (loanApp.status === 'rejected') {
+      throw new BadRequestException('Application is already rejected');
+    }
+
+    // Update application status
+    loanApp.status = 'rejected';
+    await this.loanAppRepo.save(loanApp);
+
+    // Create rejected loan record
+    const loan = this.loanRepo.create({
+      loanCode: `LN${Date.now()}`,
+      application: loanApp,
+      disbursedAmount: 0,
+      repaymentAmount: 0,
+      outstandingBalance: 0,
+      disbursementDate: null,
+      status: 'rejected',
+      rejectionReason: reason,
+    });
+
+    return this.loanRepo.save(loan);
   }
 
   async findAll(filters: {

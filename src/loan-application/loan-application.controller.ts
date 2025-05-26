@@ -52,6 +52,14 @@ export class LoanApplicationController {
     return this.loanAppService.approveApplication(id);
   }
 
+  @Patch(':id/reject')
+  rejectLoan(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('reason') reason: string,
+  ) {
+    return this.loanAppService.rejectApplication(id, reason);
+  }
+
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.loanAppService.findOne(id);

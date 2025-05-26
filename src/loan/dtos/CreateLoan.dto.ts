@@ -16,6 +16,8 @@ export class CreateLoanDto {
   @IsDateString()
   disbursementDate: Date;
 
-  @IsEnum(['active', 'closed', 'defaulted'])
-  status: 'active' | 'closed' | 'defaulted';
+  @IsEnum(['active', 'closed', 'defaulted', 'rejected'])
+  status: 'active' | 'closed' | 'defaulted' | 'rejected';
+
+  rejectionReason: string;
 }

@@ -6,7 +6,8 @@ import * as crypto from 'crypto';
 
 async function startServer() {
   const app = await NestFactory.create(AppModule);
-   app.useGlobalFilters(new AllExceptionsFilter());
+  app.enableCors();
+  app.useGlobalFilters(new AllExceptionsFilter());
   await app.listen(3000);
 }
 startServer();
